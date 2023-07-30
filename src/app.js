@@ -19,6 +19,6 @@ app.use("/", userRouter);
 app.use("/", PublicRiuter);
 
 app.get("/test", (req, res) => {
-  res.send(<h1>working</h1>);
+  res.send("<h1>working</h1>");
 });
 export { app };
