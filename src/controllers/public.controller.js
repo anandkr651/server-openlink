@@ -10,8 +10,13 @@ export const getallUrls = async (req, res) => {
       return res.status(404).send("user not found");
     }
     const links = await Link.find({ userId: user._id }).select(
-      "title url image"
+      "title url image isActive"
     );
-    res.send(links);
-  } catch (error) {}
+
+    const activeLinks = links.filter((item) => item.isActive !== false);
+    console.log(activeLinks);
+    res.send(activeLinks);
+  } catch (error) {
+    return res.status(500).send("internal server error");
+  }
 };

@@ -1,15 +1,16 @@
 import { Router } from "express";
 import {
-  createLink,
-  Login,
-  Signin,
+  GetAllLinks,
+  Create,
+  DeactivateLink,
+  DeleteLink,
 } from "../../controllers/user/user.controller.js";
-import { verifyJwt } from "../../middlewares/auth.middeware.js";
+import { verifyAccessToken } from "../../middlewares/auth.middeware.js";
 const router = Router();
 
-router.route("/login").post(Login);
-router.route("/signin").post(Signin);
-
-router.route("/user").post(verifyJwt, createLink);
+router.route("/user").get(verifyAccessToken, GetAllLinks);
+router.route("/create").post(verifyAccessToken, Create);
+router.route("/offSwitch/:id").patch(verifyAccessToken, DeactivateLink);
+router.route("/deleteurl/:id").delete(verifyAccessToken, DeleteLink);
 
 export default router;

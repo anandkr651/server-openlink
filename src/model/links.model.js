@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const LinkSchema = new Schema({
   title: {
     type: String,
-    require: true,
+    default: "",
   },
   url: {
     type: String,
@@ -11,6 +11,7 @@ const LinkSchema = new Schema({
   },
   image: {
     type: String,
+    default: "",
   },
   isActive: {
     type: Boolean,

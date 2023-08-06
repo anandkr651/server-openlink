@@ -1,70 +1,69 @@
 import { Link } from "../../model/links.model.js";
 import { metaData } from "../../utils/getMetaData.js";
-import { User } from "../../model/user.model.js";
-import bcrypt from "bcrypt";
+import { apiResponse } from "../../utils/apiResponce.js";
 
-export const Login = async (req, res) => {
-  const { email, password } = req.body;
-  if (!(email && password)) {
-    return res.status(403).send("email and password is required");
-  }
-
+export const GetAllLinks = async (req, res) => {
   try {
-    const user = await User.findOne({ email: email });
+    const user = req.user;
     if (!user) {
-      return res.status(404).send("no user found");
+      return res.status(401).send(new apiResponse("user not found", 401));
     }
-    const isCorrectPassword = await user.verifyPassword(password);
-    if (!isCorrectPassword) {
-      return res.status(400).send("password not match");
-    }
-    const token = user.generateToken();
-    user.password = undefined;
-    res.cookie(token);
-    res.status(200).json({ user, token });
+
+    const allLinks = await Link.find({ userId: user._id });
+
+    return res
+      .status(200)
+      .json(new apiResponse("Sucess", 200, { links: allLinks }));
   } catch (error) {
-    console.log(error);
+    return res
+      .status(500)
+      .send(new apiResponse("something went wrong while fetching links", 500));
   }
 };
 
-export const Signin = async (req, res) => {
-  const { userName, email, password } = req.body;
-  if (!(userName && email && password)) {
-    return res.status(401).send("all feilds are reuired");
-  }
-  try {
-    const ExistingUser = await User.findOne({ userName });
-    if (ExistingUser) {
-      return res.status(400).send("username allready exist");
-    }
-    const hasPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
-      userName,
-      email,
-      password: hasPassword,
-    });
-    res.status(200).send("USER Created");
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const createLink = async (req, res) => {
-  const { url } = req.body;
+export const Create = async (req, res) => {
+  const { urlValue } = req.body;
   const user = req.user;
-  if (!url) {
-    return res.status(403).send("NO EMAIL FOUND");
-  }
+  const { title, image, url } = await metaData(`http://${urlValue}`);
+  console.log(title);
   try {
-    const { title, image, icon } = await metaData(url);
-    const link = await Link.create({
-      title,
-      url,
-      image: image || icon,
+    const UrlData = await Link.create({
+      title: title || `http://${urlValue}`,
+      url: url || `http://${urlValue}`,
+      image: image || "",
       userId: user._id,
     });
-    res.status(200).json({ msg: "link created", link: link });
+    res.send(new apiResponse("Sucess", 200, { urlData: UrlData }));
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const DeactivateLink = async (req, res) => {
+  const user = req.user;
+  const { id } = req.params;
+  const { isActive } = req.body;
+  try {
+    const url = await Link.findByIdAndUpdate(
+      id,
+      { $set: { isActive: !isActive } },
+      { new: true }
+    );
+    // url.get("isActive");
+
+    res.status(200).send(new apiResponse("Success", 200, { update: url }));
+  } catch (error) {
+    return res.status(500).send("server error");
+  }
+};
+
+export const DeleteLink = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await Link.findOneAndDelete({ _id: id });
+    res.status(200).send(new apiResponse("Success", 200, {}));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("something went wrong");
   }
 };

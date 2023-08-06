@@ -20,16 +20,30 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.methods.generateToken = function () {
+userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
       userName: this.userName,
       email: this.email,
     },
-    "aditya",
+    process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: 7200000,
+      expiresIn: "1m",
+    }
+  );
+};
+
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      userName: this.userName,
+      email: this.email,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
   );
 };

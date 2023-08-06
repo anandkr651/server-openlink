@@ -1,6 +1,11 @@
 import getMetaData from "metadata-scraper";
 
 export const metaData = async (url) => {
-  const data = await getMetaData(url);
-  return data;
+  console.log(url);
+  try {
+    const data = await getMetaData(url);
+    return data;
+  } catch (error) {
+    return { title: "", url: "", image: "" };
+  }
 };
