@@ -11,7 +11,7 @@ app.use(json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://celebrated-fenglisu-f91ead.netlify.app",
     credentials: true,
     // methods: "GET POST",
   })
