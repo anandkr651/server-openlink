@@ -43,6 +43,7 @@ export const Login = async (req, res) => {
       .cookie("token", refreshToken, {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         httpOnly: true,
+        secure: true,
       })
       .status(200)
       .json(
