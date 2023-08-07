@@ -44,7 +44,7 @@ export const Login = async (req, res) => {
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         httpOnly: true,
         secure: true,
-        SameSite: "None",
+        sameSite: "none",
       })
       .status(200)
       .json(
