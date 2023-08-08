@@ -24,7 +24,6 @@ const verifyAccessToken = async (req, res, next) => {
     );
   } catch (error) {
     console.log(error);
-    console.log("in token");
   }
 };
 

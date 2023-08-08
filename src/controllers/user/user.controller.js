@@ -24,18 +24,36 @@ export const GetAllLinks = async (req, res) => {
 export const Create = async (req, res) => {
   const { urlValue } = req.body;
   const user = req.user;
-  const { title, image, url } = await metaData(`http://${urlValue}`);
-  console.log(title);
+  const { title, image, url, icon } = await metaData(`http://${urlValue}`);
   try {
     const UrlData = await Link.create({
       title: title || `http://${urlValue}`,
       url: url || `http://${urlValue}`,
-      image: image || "",
+      image: image || icon || "",
       userId: user._id,
     });
     res.send(new apiResponse("Sucess", 200, { urlData: UrlData }));
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const UpdateTitleAndLink = async (req, res) => {
+  const { id } = req.params;
+  const { title, url } = req.body;
+  if (!(title && url)) {
+    return res.status(400).send("fields require");
+  }
+  try {
+    const updated = await Link.findByIdAndUpdate(
+      id,
+      { $set: { title: title, url: url } },
+      { new: true }
+    );
+    return res.status(200).send(new apiResponse("success", 200, { updated }));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("server error");
   }
 };
 

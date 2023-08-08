@@ -14,7 +14,6 @@ export const getallUrls = async (req, res) => {
     );
 
     const activeLinks = links.filter((item) => item.isActive !== false);
-    console.log(activeLinks);
     res.send(activeLinks);
   } catch (error) {
     return res.status(500).send("internal server error");
