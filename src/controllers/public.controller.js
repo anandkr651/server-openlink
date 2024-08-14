@@ -10,7 +10,7 @@ export const getallUrls = async (req, res) => {
       return res.status(404).send("user not found");
     }
     const links = await Link.find({ userId: user._id }).select(
-      "title url image isActive"
+      "-title -url -image -isActive"
     );
 
     const activeLinks = links.filter((item) => item.isActive !== false);
